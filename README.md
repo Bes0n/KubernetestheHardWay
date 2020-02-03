@@ -11,7 +11,7 @@ Kubernetes the Hard Way
     - [Generating Client Certificates](#generating-client-certificates)
     - [Generating the Kubernetes API Server Certificate](#generating-the-kubernetes-api-server-certificate)
     - [Generating the Service Account Key Pair](#generating-the-service-account-key-pair)
-    - [](#)
+    - [Distributing the Certificate Files](#distributing-the-certificate-files)
     - [](#)
 
 ## Getting Started 
@@ -422,3 +422,21 @@ cfssl gencert \
 }
 ```
 
+### Distributing the Certificate Files
+Now that all of the necessary certificates have been generated, we need to move the files onto the appropriate servers. In this lesson, we will copy the necessary certificate files to each of our cloud servers. After completing this lesson, your controller and worker nodes should each have the certificate files which they need.
+  
+Here are the commands used in the demo. Be sure to replace the placeholders with the actual values from from your cloud servers.
+  
+Move certificate files to the worker nodes:
+```
+scp ca.pem <worker 1 hostname>-key.pem <worker 1 hostname>.pem user@<worker 1 public IP>:~/
+scp ca.pem <worker 2 hostname>-key.pem <worker 2 hostname>.pem user@<worker 2 public IP>:~/
+```
+  
+Move certificate files to the controller nodes:
+```
+scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
+    service-account-key.pem service-account.pem user@<controller 1 public IP>:~/
+scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
+    service-account-key.pem service-account.pem user@<controller 2 public IP>:~/
+```
