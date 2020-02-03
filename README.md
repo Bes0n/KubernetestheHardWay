@@ -6,7 +6,7 @@ Kubernetes the Hard Way
     - [Setting Up Your Cloud Servers](#setting-up-your-cloud-servers)
     - [Client Tools](#client-tools)
 - [Provisioning the CA and Generating TLS Certificates](#provisioning-the-ca-and-generating-tls-certificates)
-    - [Why Do We Need a CA and TLS Certificates?](#why-do-we-need a-ca-and-tls-certificates)
+    - [Why Do We Need a CA and TLS Certificates?](#why-do-we-need-a-ca-and-tls-certificates)
     - [Provisioning the Certificate Authority](#provisioning-the-certificate-authority)
     - [](#)
     - [](#)
