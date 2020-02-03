@@ -31,6 +31,7 @@ In order to proceed with *Kubernetes the Hard Way*, there are some client tools 
 You can find more information on how to install these tools, as well as instructions for OS X/Linux, here: https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/02-client-tools.md
 
 **Commands used in the demo to install the client tools in a Linux environment:**
+  
 cfssl:
 ```
 wget -q --show-progress --https-only --timestamping \
@@ -41,7 +42,7 @@ sudo mv cfssl_linux-amd64 /usr/local/bin/cfssl
 sudo mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
 cfssl version
 ```
-
+  
 If you want to work on an i386 machine, use these commands to install cfssl instead:
 ```
 wget -q --show-progress --https-only --timestamping \
@@ -52,7 +53,7 @@ sudo mv cfssl_linux-386 /usr/local/bin/cfssl
 sudo mv cfssljson_linux-386 /usr/local/bin/cfssljson
 cfssl version
 ```
-
+  
 kubectl:
 ```
 wget https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kubectl
