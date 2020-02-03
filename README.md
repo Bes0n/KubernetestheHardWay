@@ -348,7 +348,9 @@ Here are the commands used in the demo. Be sure to replace all the placeholder v
 ```
 cd ~/kthw
 
-CERT_HOSTNAME=10.32.0.1,<controller node 1 Private IP>,<controller node 1 hostname>,<controller node 2 Private IP>,<controller node 2 hostname>,<API load balancer Private IP>,<API load balancer hostname>,127.0.0.1,localhost,kubernetes.default
+CERT_HOSTNAME=10.32.0.1,<controller node 1 Private IP>,<controller node 1 hostname>,
+<controller node 2 Private IP>,<controller node 2 hostname>,<API load balancer
+Private IP>,<API load balancer hostname>,127.0.0.1,localhost,kubernetes.default
 
 {
 
