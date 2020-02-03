@@ -63,3 +63,7 @@ kubectl version --client
 ```
 
 ## Provisioning the CA and Generating TLS Certificates
+### Why Do We Need a CA and TLS Certificates?
+In this section of the course, we will be creating the certificate authority and various TLS certificates that we will need later to set up the Kubernetes cluster. This lesson provides some background on why we need these certificates and what they will be used for in Kubernetes. After completing this lesson, you will have a basic understanding of the context for the tasks that will be performed in this section. These tasks will provide you with a better understanding of what you will be doing as you provision the certificate authority and generate the TLS certificates.
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img3.png)
