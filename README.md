@@ -448,6 +448,34 @@ scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
 ```
 
 ### Creating a Certificate Authority and TLS Certificates for Kubernetes
+##### Additional Information and Resources
+Your team is working on setting up a Kubernetes cluster with two controllers and two worker nodes. To enable all the components of Kubernetes to securely authenticate with each other, your team needs to provision a certificate authority and generate several certificates using that authority. Your task is to create the certificate authority and the necessary certificates.
+  
+You will need to log into the learning activity server using the `Workspace Public IP`. This server already has cfssl installed, so there is no need to install it.
+  
+In order to accomplish this, you need to:
+
+- Provision the certificate authority (CA)
+- Generate the necessary Kubernetes client certs, as well as kubelet client certs for
+two worker nodes.
+- Generate the Kubernetes API server certificate.
+- Generate a Kubernetes service account key pair.
+  
+Click the icon next to each task below for more information on how to complete each task. You can also check out the solution video for a detailed walkthrough.
+  
+Here is the cluster architecture for which you will need to generate certificates. Note that these are not real servers, just values that we will use for the purposes of this activity.
+  
+- Controllers:
+  - Hostname: controller0.mylabserver.com, IP: 172.34.0.0
+  - Hostname: controller1.mylabserver.com, IP: 172.34.0.1
+
+- Workers:
+  - Hostname: worker0.mylabserver.com, IP: 172.34.1.0
+  - Hostname: worker1.mylabserver.com, IP: 172.34.1.1
+
+- Kubernetes API Load Balancer:
+  - Hostname: kubernetes.mylabserver.com, IP: 172.34.2.0
+
 **Provision the certificate authority (CA).**
 - You can provision the certificate authority like so:
 ```
