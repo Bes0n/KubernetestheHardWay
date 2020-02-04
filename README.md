@@ -18,7 +18,10 @@ Kubernetes the Hard Way
     - [Generating Kubeconfigs for the Cluster](#generating-kubeconfigs-for-the-cluster)
     - [Distributing the Kubeconfig Files](#distributing-the-kubeconfig-files)
     - [Generating Kubeconfigs for a New Kubernetes Cluster](#generating-kubeconfigs-for-a-new-kubernetes-cluster)
-
+- [Generating the Data Encryption Config and Key](#generating-the-data-encryption-config-and-key)
+    - [What is the Data Encryption Config in Kubernetes?](#what-is-the-data-encryption-config-in-kubernetes)
+    - [Generating the Data Encryption Config](#generating-the-data-encryption-config)
+    - [Generating a Data Encryption Config for Kubernetes](#generating-a-data-encryption-config-for-kubernetes)
 
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
