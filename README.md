@@ -1141,3 +1141,34 @@ EOF
 scp encryption-config.yaml user@<controller 1 public ip>:~/
 scp encryption-config.yaml user@<controller 2 public ip>:~/
 ```
+
+### Generating a Data Encryption Config for Kubernetes
+##### Additional Information and Resources
+Your team is working on setting up a Kubernetes cluster with two controllers and two worker nodes. In order to ensure that the cluster is configured securely, the team wants to enable the feature that allows Kubernetes to encrypt sensitive data at rest. In order to accomplish this, the team needs a Kubernetes data encryption config file containing an encryption key. Your task is to generate an encryption key and create this file, then copy the file to the two Kubernetes master servers.
+  
+**Generate an encryption key and include it in a Kubernetes data encryption config file.**
+- To accomplish this task, do the following on the workspace server:
+```
+ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
+
+cat > encryption-config.yaml << EOF
+kind: EncryptionConfig
+apiVersion: v1
+resources:
+  - resources:
+      - secrets
+    providers:
+      - aescbc:
+          keys:
+            - name: key1
+              secret: ${ENCRYPTION_KEY}
+      - identity: {}
+EOF
+```
+
+**Copy the file to the Kubernetes controller servers.**
+- Copy `encryption-config.yaml` to each Kubernetes controller by running these commands from the workspace server. Be sure to replace the placeholders with the actual IP addresses of the controller servers.
+```
+scp encryption-config.yaml cloud_user@<controller 1 public ip>:~/
+scp encryption-config.yaml cloud_user@<controller 2 public ip>:~/
+```
