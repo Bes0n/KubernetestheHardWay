@@ -914,3 +914,66 @@ scp <worker 2 hostname>.kubeconfig kube-proxy.kubeconfig user@<worker 2 public I
 scp admin.kubeconfig kube-controller-manager.kubeconfig kube-scheduler.kubeconfig user@<controller 1 public IP>:~/
 scp admin.kubeconfig kube-controller-manager.kubeconfig kube-scheduler.kubeconfig user@<controller 2 public IP>:~/
 ```
+
+### Generating Kubeconfigs for a New Kubernetes Cluster
+##### Additional Information and Resources
+Your team is setting up a new Kubernetes cluster with two controllers and two worker nodes. The team has already created a set of client certificates to allow different components of the cluster to authenticate, but they need a set of kubeconfig files to be created using these certificates. Your task is to generate the kubeconfig files that will be used to set up the Kubernetes cluster.
+  
+The following kubeconfig files need to be created:
+
+- Kubelet (one kubeconfig for each worker node)
+- Kube-proxy
+- Kube-controller-manager
+- Kube-scheduler
+- Admin
+Here is the cluster architecture. Note that these are not real servers, just values that we will use for the purposes of this activity.
+
+- Controllers:
+  - Hostname: controller0.mylabserver.com, IP: 172.34.0.0
+  - Hostname: controller1.mylabserver.com, IP: 172.34.0.1
+
+- Workers:
+  - Hostname: worker0.mylabserver.com, IP: 172.34.1.0
+  - Hostname: worker1.mylabserver.com, IP: 172.34.1.1
+
+- Kubernetes API Load Balancer:
+  - Hostname: kubernetes.mylabserver.com, IP: 172.34.2.0
+
+- Additional Notes:
+  - Client certificates have already been created. They can be found in `/home/cloud_user` on the workspace server.
+  - The `kubelet` and `kube-proxy` services will access the Kubernetes API through the Kubernetes API load balancer. All other services can access it locally at https://127.0.0.1:6443.
+
+**Generate kubelet kubeconfigs for each worker node.**
+- To complete this task, generate a `kubelet` kubeconfig for each worker node. You can do so like this:
+```
+KUBERNETES_PUBLIC_ADDRESS=172.34.2.0
+
+for instance in worker0.mylabserver.com worker1.mylabserver.com; do
+  kubectl config set-cluster kubernetes-the-hard-way \
+    --certificate-authority=ca.pem \
+    --embed-certs=true \
+    --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 \
+    --kubeconfig=${instance}.kubeconfig
+
+  kubectl config set-credentials system:node:${instance} \
+    --client-certificate=${instance}.pem \
+    --client-key=${instance}-key.pem \
+    --embed-certs=true \
+    --kubeconfig=${instance}.kubeconfig
+
+  kubectl config set-context default \
+    --cluster=kubernetes-the-hard-way \
+    --user=system:node:${instance} \
+    --kubeconfig=${instance}.kubeconfig
+
+  kubectl config use-context default --kubeconfig=${instance}.kubeconfig
+done
+```
+
+**Generate a kube-proxy kubeconfig.**
+- To complete this task, generate a kubeconfig for `kube-proxy`. You can do so like this:
+**Generate a kube-controller-manager kubeconfig.**
+
+**Generate a kube-scheduler kubeconfig.**
+
+**Generate an admin kubeconfig.**
