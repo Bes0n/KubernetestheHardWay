@@ -32,6 +32,8 @@ Kubernetes the Hard Way
     - [Installing Kubernetes Control Plane Binaries](#installing-kubernetes-control-plane-binaries)
     - [Setting up the Kubernetes API Server](#setting-up-the-kubernetes-api-server)
     - [Setting up the Kubernetes Controller Manager](#setting-up-the-kubernetes-controller-manager)
+    - [Setting up the Kubernetes Scheduler](#setting-up-the-kubernetes-scheduler)
+    - [Enable HTTP Health Checks](#enable-http-health-checks)
 
 
 ## Getting Started 
@@ -1497,3 +1499,114 @@ WantedBy=multi-user.target
 EOF
 ```
 
+### Setting up the Kubernetes Scheduler
+Now we are ready to set up the Kubernetes scheduler. This lesson will walk you through the process of configuring the kube-scheduler `systemd` service. Since this is the last of the three control plane services that need to be set up in this section, this lesson also guides you through through enabling and starting all three services on both control nodes. Finally, this lesson shows you how to verify that your Kubernetes controllers are healthy and working so far. After completing this lesson, you will have a basic, working, Kuberneets control plane distributed across your two control nodes.
+
+- You can configure the Kubernetes Sheduler like this.
+- Copy `kube-scheduler.kubeconfig` into the proper location:
+```
+sudo cp kube-scheduler.kubeconfig /var/lib/kubernetes/
+```
+
+- Generate the kube-scheduler yaml config file.
+```
+cat << EOF | sudo tee /etc/kubernetes/config/kube-scheduler.yaml
+apiVersion: componentconfig/v1alpha1
+kind: KubeSchedulerConfiguration
+clientConnection:
+  kubeconfig: "/var/lib/kubernetes/kube-scheduler.kubeconfig"
+leaderElection:
+  leaderElect: true
+EOF
+```
+
+- Create the kube-scheduler `systemd` unit file:
+```
+cat << EOF | sudo tee /etc/systemd/system/kube-scheduler.service
+[Unit]
+Description=Kubernetes Scheduler
+Documentation=https://github.com/kubernetes/kubernetes
+
+[Service]
+ExecStart=/usr/local/bin/kube-scheduler \\
+  --config=/etc/kubernetes/config/kube-scheduler.yaml \\
+  --v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+- Start and enable all of the services:
+```
+sudo systemctl daemon-reload
+sudo systemctl enable kube-apiserver kube-controller-manager kube-scheduler
+sudo systemctl start kube-apiserver kube-controller-manager kube-scheduler
+```
+
+- It's a good idea to verify that everything is working correctly so far: Make sure all the services are `active (running)`:
+```
+sudo systemctl status kube-apiserver kube-controller-manager kube-scheduler
+```
+
+- Use kubectl to check componentstatuses. `admin.kubeconfig` used here for authenticating with Kubernetes API:
+```
+kubectl get componentstatuses --kubeconfig admin.kubeconfig
+```
+
+- You should get output that looks like this:
+```
+NAME                 STATUS    MESSAGE              ERROR
+controller-manager   Healthy   ok
+scheduler            Healthy   ok
+etcd-0               Healthy   {"health": "true"}
+etcd-1               Healthy   {"health": "true"}
+```
+
+### Enable HTTP Health Checks
+Part of Kelsey Hightower's original Kubernetes the Hard Way guide involves setting up an nginx proxy on each controller to provide access to the Kubernetes API /healthz endpoint over http. This lesson explains the reasoning behind the inclusion of that step and guides you through the process of implementing the http /healthz proxy.
+
+- You can set up a basic nginx proxy for the healthz endpoint by first installing nginx
+```
+sudo apt-get install -y nginx
+```
+
+- Create an nginx configuration for the health check proxy:
+```
+cat > kubernetes.default.svc.cluster.local << EOF
+server {
+  listen      80;
+  server_name kubernetes.default.svc.cluster.local;
+
+  location /healthz {
+     proxy_pass                    https://127.0.0.1:6443/healthz;
+     proxy_ssl_trusted_certificate /var/lib/kubernetes/ca.pem;
+  }
+}
+EOF
+```
+
+- Set up the proxy configuration so that it is loaded by nginx:
+```
+sudo mv kubernetes.default.svc.cluster.local /etc/nginx/sites-available/kubernetes.default.svc.cluster.local
+sudo ln -s /etc/nginx/sites-available/kubernetes.default.svc.cluster.local /etc/nginx/sites-enabled/
+sudo systemctl restart nginx
+sudo systemctl enable nginx
+```
+
+- You can verify that everything is working like so:
+```
+curl -H "Host: kubernetes.default.svc.cluster.local" -i http://127.0.0.1/healthz
+```
+
+- Outpus should be:
+```
+HTTP/1.1 200 OK
+Server: nginx/1.10.3 (Ubuntu)
+Date: Wed, 05 Feb 2020 19:19:20 GMT
+Content-Type: text/plain; charset=utf-8
+Content-Length: 2
+Connection: keep-alive
+```
