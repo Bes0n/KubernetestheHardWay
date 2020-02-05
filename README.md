@@ -28,6 +28,7 @@ Kubernetes the Hard Way
     - [Bootstrapping an etcd Cluster for Kubernetes](#bootstrapping-an-etcd-cluster-for-kubernetes)
 - [Bootstrapping the Kubernetes Control Plane](#bootstrapping-the-kubernetes-control-plane)
     - [What is the Kubernetes Control Plane?](#what-is-the-kubernetes-control-plane)
+    - [Control Plane Architecture Overview](#control-plane-architecture-overview)
 
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
@@ -1356,3 +1357,17 @@ In this section, we will be setting up a distributed Kubernetes control plane. T
 ![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img11.png)
 
 - You can find more information on the Kubernetes control plane in the official docs: https://kubernetes.io/docs/concepts/overview/components/#master-components
+
+
+### Control Plane Architecture Overview
+This lesson provides a brief overview of the architectural end-state of this section of the course. After completing this lesson, you should have an understanding of what this section is seeking to accomplish, and what your Kubernetes cluster will look like after this section is completed. You will then be ready to begin the process of actually building out your own Kubernetes control plane!
+
+- In this module we're going to configure Controller 1 and Controller 2 nodes. 
+  - etc - already installed
+  - kube-apiserver 
+  - small nginx server with healthz monitoring
+  - kube-controller-manager
+  - kube-scheduler
+  - kube api load balancer
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img12.png)
