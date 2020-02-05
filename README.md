@@ -22,6 +22,10 @@ Kubernetes the Hard Way
     - [What is the Data Encryption Config in Kubernetes?](#what-is-the-data-encryption-config-in-kubernetes)
     - [Generating the Data Encryption Config](#generating-the-data-encryption-config)
     - [Generating a Data Encryption Config for Kubernetes](#generating-a-data-encryption-config-for-kubernetes)
+- [Bootstrapping the etcd Cluster](#bootstrapping-the-etcd-cluster)
+    - [What is etcd?](#what-is-etc?)
+    - [Creating the etcd Cluster](#creating the etcd cluster)
+    - [Bootstrapping an etcd Cluster for Kubernetes](#bootstrapping-an-etcd-cluster-for-kubernetes)
 
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
@@ -1172,3 +1176,18 @@ EOF
 scp encryption-config.yaml cloud_user@<controller 1 public ip>:~/
 scp encryption-config.yaml cloud_user@<controller 2 public ip>:~/
 ```
+
+## Bootstrapping the etcd Cluster
+### What is etcd?
+In this section, we will be setting up an etcd cluster, which is a necessary component of our Kubernetes cluster. In order to fully understand this process, however, it is a good idea to have some idea of what etcd and the role it plays in Kubernetes. This lesson introduces you to etcd and discusses how Kubernetes uses it. After completing this lesson, you will have some background knowledge to prepare you for the task of installing and configuring etcd.
+
+- You can find more information about etcd in the following locations:
+  - https://coreos.com/etcd/
+  - https://github.com/coreos/etcd (this GitHub repository also containes the etcd source code)
+
+- Check out the Kubernetes documentation for more information on managing etcd in the context of a Kubernetes cluster:
+  - https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img8.png)
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img9.png)
