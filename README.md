@@ -26,6 +26,8 @@ Kubernetes the Hard Way
     - [What is etcd?](#what-is-etcd)
     - [Creating the etcd Cluster](#creating-the-etcd-cluster)
     - [Bootstrapping an etcd Cluster for Kubernetes](#bootstrapping-an-etcd-cluster-for-kubernetes)
+- [Bootstrapping the Kubernetes Control Plane](#bootstrapping-the-kubernetes-control-plane)
+    - [What is the Kubernetes Control Plane?](#what-is-the-kubernetes-control-plane)
 
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
@@ -1344,3 +1346,13 @@ sudo systemctl daemon-reload
 sudo systemctl enable etcd
 sudo systemctl start etcd
 ```
+
+## Bootstrapping the Kubernetes Control Plane
+### What is the Kubernetes Control Plane?
+In this section, we will be setting up a distributed Kubernetes control plane. This lesson introduces the control plane and provides a brief overview of the various components that you will be working with. After completing this lesson, you should have an idea of what the Kubernetes control plane does, and you will have a basic understanding of the components that you will be installing and configuring throughout this section of the course.
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img10.png)
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img11.png)
+
+- You can find more information on the Kubernetes control plane in the official docs: https://kubernetes.io/docs/concepts/overview/components/#master-components
