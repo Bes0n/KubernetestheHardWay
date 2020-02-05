@@ -23,8 +23,8 @@ Kubernetes the Hard Way
     - [Generating the Data Encryption Config](#generating-the-data-encryption-config)
     - [Generating a Data Encryption Config for Kubernetes](#generating-a-data-encryption-config-for-kubernetes)
 - [Bootstrapping the etcd Cluster](#bootstrapping-the-etcd-cluster)
-    - [What is etcd?](#what-is-etc?)
-    - [Creating the etcd Cluster](#creating the etcd cluster)
+    - [What is etcd?](#what-is-etcd)
+    - [Creating the etcd Cluster](#creating-the-etcd-cluster)
     - [Bootstrapping an etcd Cluster for Kubernetes](#bootstrapping-an-etcd-cluster-for-kubernetes)
 
 ## Getting Started 
@@ -1191,3 +1191,4 @@ In this section, we will be setting up an etcd cluster, which is a necessary com
 ![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img8.png)
 
 ![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img9.png)
+
