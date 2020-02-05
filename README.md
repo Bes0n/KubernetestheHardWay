@@ -37,6 +37,8 @@ Kubernetes the Hard Way
     - [Set up RBAC for Kubelet Authorization](#set-up-rbac-for-kubelet-authorization)
     - [Setting up a Kube API Frontend Load Balancer](#setting-up-a-kube-api-frontend-load-balancer)
     - [Bootstrapping a Kubernetes Control Plane](#bootstrapping-a-kubernetes-control-plane)
+    - [Setting Up a Frontend Load Balancer for the Kubernetes API](#setting-up-a-frontend-load-balancer-for-the-kubernetes-api)
+
 
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
@@ -1979,4 +1981,70 @@ subjects:
     kind: User
     name: kubernetes
 EOF
+```
+
+### Setting Up a Frontend Load Balancer for the Kubernetes API
+##### Additional Information and Resources
+Your team is working on setting up a new Kubernetes cluster. Two Kubernetes controllers have been configured, but the team wants to use a load balancer to manage traffic to the Kubernetes API. You have been given the task of setting up an Nginx load balancer that will balance traffic across the Kubernetes API services running on the two Kubernetes controllers.
+
+##### Install Nginx on the load balancer server.
+- You can install Nginx like this:
+```
+sudo apt-get install -y nginx
+sudo systemctl enable nginx
+```
+
+##### Configure Nginx to balance Kubernetes API traffic across the two controllers.
+- Do the following to configure the Nginx load balancer:
+```
+sudo mkdir -p /etc/nginx/tcpconf.d
+sudo vi /etc/nginx/nginx.conf
+```
+
+- Add the following configuration at the bottom of `nginx.conf`:
+```
+include /etc/nginx/tcpconf.d/*;
+```
+
+- Create a config file to configure Kubernetes API load balancing:
+```
+cat << EOF | sudo tee /etc/nginx/tcpconf.d/kubernetes.conf
+stream {
+    upstream kubernetes {
+        server <controller 0 private ip>:6443;
+        server <controller 1 private ip>:6443;
+    }
+
+    server {
+        listen 6443;
+        listen 443;
+        proxy_pass kubernetes;
+    }
+}
+EOF
+```
+
+- Reload the Nginx configuration:
+```
+sudo nginx -s reload
+```
+
+- You can verify that everything is working by making a request to the Kubernetes API through the load balancer:
+```
+curl -k https://localhost:6443/version
+```
+
+- This request should return some Kubernetes version data.
+```
+{
+  "major": "1",
+  "minor": "10",
+  "gitVersion": "v1.10.2",
+  "gitCommit": "81753b10df112992bf51bbc2c2f85208aad78335",
+  "gitTreeState": "clean",
+  "buildDate": "2018-04-27T09:10:24Z",
+  "goVersion": "go1.9.3",
+  "compiler": "gc",
+  "platform": "linux/amd64"
+}
 ```
