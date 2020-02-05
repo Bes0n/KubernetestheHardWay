@@ -34,7 +34,7 @@ Kubernetes the Hard Way
     - [Setting up the Kubernetes Controller Manager](#setting-up-the-kubernetes-controller-manager)
     - [Setting up the Kubernetes Scheduler](#setting-up-the-kubernetes-scheduler)
     - [Enable HTTP Health Checks](#enable-http-health-checks)
-
+    - [Set up RBAC for Kubelet Authorization](#set-up-rbac-for-kubelet-authorization)
 
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
@@ -1568,6 +1568,8 @@ etcd-1               Healthy   {"health": "true"}
 ### Enable HTTP Health Checks
 Part of Kelsey Hightower's original Kubernetes the Hard Way guide involves setting up an nginx proxy on each controller to provide access to the Kubernetes API /healthz endpoint over http. This lesson explains the reasoning behind the inclusion of that step and guides you through the process of implementing the http /healthz proxy.
 
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img13.png)
+
 - You can set up a basic nginx proxy for the healthz endpoint by first installing nginx
 ```
 sudo apt-get install -y nginx
@@ -1609,4 +1611,36 @@ Date: Wed, 05 Feb 2020 19:19:20 GMT
 Content-Type: text/plain; charset=utf-8
 Content-Length: 2
 Connection: keep-alive
+```
+
+### Set up RBAC for Kubelet Authorization
+One of the necessary steps in setting up a new Kubernetes cluster from scratch is to assign permissions that allow the Kubernetes API to access various functionality within the worker kubelets. This lesson guides you through the process of creating a ClusterRole and binding it to the kubernetes user so that those permissions will be in place. After completing this lesson, your cluster will have the necessary role-based access control configuration to allow the cluster's API to access kubelet functionality such as logs and metrics.
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img14.png)
+
+- You can configure RBAC for kubelet authorization with these commands. Note that these commands only need to be run on one control node.
+
+- Create a role with the necessary permissions:
+```
+cat << EOF | kubectl apply --kubeconfig admin.kubeconfig -f -
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  annotations:
+    rbac.authorization.kubernetes.io/autoupdate: "true"
+  labels:
+    kubernetes.io/bootstrapping: rbac-defaults
+  name: system:kube-apiserver-to-kubelet
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - nodes/proxy
+      - nodes/stats
+      - nodes/log
+      - nodes/spec
+      - nodes/metrics
+    verbs:
+      - "*"
+EOF
 ```
