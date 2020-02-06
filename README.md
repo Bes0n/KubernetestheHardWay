@@ -45,7 +45,9 @@ Building Highly Available Kubernetes cluster from scratch.
     - [Configuring Containerd](#configuring-containerd)
     - [Configuring Kube-Proxy](#configuring-kube-proxy)
     - [Bootstrapping Kubernetes Worker Nodes](#bootstrapping-kubernetes-worker-nodes)
-
+- [Configuring kubectl for Remote Access](#configuring-kubectl-for-remote-access)
+    - [Kubernetes Remote Access and kubectl](#kubernetes-remote-access-and-kubectl)
+    - [Configuring Kubectl for Remote Access](#configuring-kubectl-for-remote-access)
 
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
@@ -2507,3 +2509,47 @@ NAME                      STATUS     ROLES     AGE       VERSION
 worker0.mylabserver.com   NotReady   <none>    55s       v1.10.2
 worker1.mylabserver.com   NotReady   <none>    47s       v1.10.2
 ```
+
+## Configuring kubectl for Remote Access
+### Kubernetes Remote Access and kubectl
+Kubectl is a powerful command-line tool that allows you to manage Kubernetes clusters. In order to manage the cluster from your machine, you will need to configure your local kubectl to connect to the remote cluster. This lesson discusses kubectl and introduces the rationale behind using it to manage the cluster remotely. It also discusses how a local kubectl installation fits into the larger overall cluster architecture. This will provide some background to help you understand the following lesson, which demonstrates how to implement this configuration.
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img18.png)
+
+- You can find more information about kubectl in the official docs: https://kubernetes.io/docs/reference/kubectl/overview/
+
+### Configuring Kubectl for Remote Access
+There are a few steps to configuring a local kubectl installation for managing a remote cluster. This lesson will guide you through that process. After completing this lesson, you should have a local kubectl installation that is capable of running kubectl commands against your remote Kubernetes cluster.
+
+- In a separate shell, open up an ssh tunnel to port 6443 on your Kubernetes API load balancer:
+```
+ssh -L 6443:localhost:6443 user@<your Load balancer cloud server public IP>
+```
+
+- You can configure your local kubectl in your main shell like so. Set KUBERNETES_PUBLIC_ADDRESS to the public IP of your load balancer.
+```
+cd ~/kthw
+
+kubectl config set-cluster kubernetes-the-hard-way \
+  --certificate-authority=ca.pem \
+  --embed-certs=true \
+  --server=https://localhost:6443
+
+kubectl config set-credentials admin \
+  --client-certificate=admin.pem \
+  --client-key=admin-key.pem
+
+kubectl config set-context kubernetes-the-hard-way \
+  --cluster=kubernetes-the-hard-way \
+  --user=admin
+
+kubectl config use-context kubernetes-the-hard-way
+```
+
+- Verify that everything is working with:
+```
+kubectl get pods
+kubectl get nodes
+kubectl version
+```
+
