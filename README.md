@@ -1,5 +1,5 @@
-# KubernetestheHardWay
-Kubernetes the Hard Way
+# Kubernetes the Hard Way
+Building Highly Available Kubernetes cluster from scratch. 
 
 - [Getting Started](#getting-started)
     - [What Will the Kubernetes Cluster Architecture Look Like?](#what-will-the-kubernetes-cluster-architecture-look-like)
@@ -49,7 +49,8 @@ Kubernetes the Hard Way
 
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
-Structure going to be build during the course, according to the Kubernetes the Hard Way documentation. 
+Structure going to be build during the course, according to the Kubernetes the Hard Way documentation.
+  
 ![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img1.png)
 
 
