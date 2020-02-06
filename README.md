@@ -50,7 +50,7 @@ Building Highly Available Kubernetes cluster from scratch.
     - [Configuring Kubectl for Remote Access](#configuring-kubectl-for-remote-access)
     - [Configuring Kubectl to Access a Remote Cluster](#configuring-kubectl-to-access-a-remote-cluster)
 
-    
+
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
 Structure going to be build during the course, according to the Kubernetes the Hard Way documentation.
@@ -2556,3 +2556,53 @@ kubectl version
 ```
 
 ### Configuring Kubectl to Access a Remote Cluster
+##### Additional Information and Resources
+
+Your team has set up a Kubernetes cluster. You need to check the cluster to see what pods are currently running, but you are not in the office. You can use kubectl to interact with the cluster remotely, but first you need to configure your local kubectl with the proper kubeconfig. Your task is to configure kubectl so that you can interact with the cluster remotely, then use it to determine which pods are currently running on the cluster.
+
+We’ll use the `Workspace` server to represent your local workstation. This is the server you will need to log into so that you can configure kubectl. Kubectl is already installed, so you do not need to install it manually.
+
+##### Set the kubectl cluster data.
+- You can set the cluster data like this. Be sure to set `KUBERNETES_PUBLIC_ADDRESS` to the public IP of your controller.
+```
+KUBERNETES_PUBLIC_ADDRESS=<Controller public IP>
+
+kubectl config set-cluster kubernetes-the-hard-way \
+  --certificate-authority=ca.pem \
+  --embed-certs=true \
+  --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443
+```
+
+##### Set the credentials for kubectl.
+- The credentials are the certificate and key files `admin.pem` and `admin-key.pem`. These can be found in the home directory on the workspace server. You can set them up for kubectl like this:
+```
+kubectl config set-credentials admin \
+  --client-certificate=admin.pem \
+  --client-key=admin-key.pem
+```
+
+##### Set the context for the cluster. 
+- Set the context like this:
+```
+kubectl config set-context kubernetes-the-hard-way \
+  --cluster=kubernetes-the-hard-way \
+  --user=admin
+```
+
+##### Use the new kubectl context to check which pods are currently running on the cluster.
+- Configure kubectl to use the new context like this:
+```
+kubectl config use-context kubernetes-the-hard-way
+```
+
+- Verify that everything is working with:
+```
+kubectl get pods
+```
+
+- Since there are no pods right now, you should get the following response:
+```
+No resources found.
+```
+
+- This indicates that kubectl is set up correctly to access the cluster!
