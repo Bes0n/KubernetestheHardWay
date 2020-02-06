@@ -38,6 +38,9 @@ Kubernetes the Hard Way
     - [Setting up a Kube API Frontend Load Balancer](#setting-up-a-kube-api-frontend-load-balancer)
     - [Bootstrapping a Kubernetes Control Plane](#bootstrapping-a-kubernetes-control-plane)
     - [Setting Up a Frontend Load Balancer for the Kubernetes API](#setting-up-a-frontend-load-balancer-for-the-kubernetes-api)
+- [Bootstrapping the Kubernetes Worker Nodes](#bootstrapping the kubernetes worker nodes)
+    - [What are the Kubernetes Worker Nodes?](#what-are-the-kubernetes-worker-nodes)
+    - [Worker Node Architecture Overview](#worker-node-architecture-overview)
 
 
 ## Getting Started 
@@ -2048,3 +2051,23 @@ curl -k https://localhost:6443/version
   "platform": "linux/amd64"
 }
 ```
+
+## Bootstrapping the Kubernetes Worker Nodes
+### What are the Kubernetes Worker Nodes?
+Now that we have set up the Kubernetes control plane, we are ready to begin setting up worker nodes. This lesson introduces Kubernetes worker nodes and describes the various components that we will need for installing and configuring them. After completing this lesson, you will have a basic understanding of what worker nodes do and the components that are used to create a worker node.
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img15.png)
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img16.png)
+
+- You can find more information on Kubernetes the worker nodes in the official documentation:
+  - https://kubernetes.io/docs/concepts/architecture/
+  - https://github.com/kubernetes/community/blob/master/contributors/design-proposals/architecture/architecture.md#the-kubernetes-node
+
+### Worker Node Architecture Overview
+This lesson provides a brief overview of the end-state architecture, focusing on the two worker nodes. It discusses how the worker nodes fit into the overall architecture. After completing this lesson, you will have a reference point to help you understand what is being implemented in the following lessons as you continue seting up your worker nodes.
+
+- We're going to configure Worker 1 and Worker 2.
+- `kubelet` and `kube-proxy` are going to communicate with controller nodes through API load balancer and kube-apiserver. 
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img17.png)
