@@ -48,7 +48,9 @@ Building Highly Available Kubernetes cluster from scratch.
 - [Configuring kubectl for Remote Access](#configuring-kubectl-for-remote-access)
     - [Kubernetes Remote Access and kubectl](#kubernetes-remote-access-and-kubectl)
     - [Configuring Kubectl for Remote Access](#configuring-kubectl-for-remote-access)
+    - [Configuring Kubectl to Access a Remote Cluster](#configuring-kubectl-to-access-a-remote-cluster)
 
+    
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
 Structure going to be build during the course, according to the Kubernetes the Hard Way documentation.
@@ -2553,3 +2555,4 @@ kubectl get nodes
 kubectl version
 ```
 
+### Configuring Kubectl to Access a Remote Cluster
