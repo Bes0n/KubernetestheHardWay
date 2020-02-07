@@ -2818,18 +2818,53 @@ a. First, create an Nginx deployment with 2 replicas:
   EOF
 ```
 
-  b. Next, create a service for that deployment so that we can test connectivity to services as well:
+b. Next, create a service for that deployment so that we can test connectivity to services as well:
 ```
 kubectl expose deployment/nginx
 ```
   
-  c. Start up another pod. We will use this pod to test our networking. We will test whether we can connect to the other pods and services from this pod.
+c. Start up another pod. We will use this pod to test our networking. We will test whether we can connect to the other pods and services from this pod.
 ```
 kubectl run busybox --image=radial/busyboxplus:curl --command -- sleep 3600
 POD_NAME=$(kubectl get pods -l run=busybox -o jsonpath="{.items[0].metadata.name}")
 ```
 
-  d. Get the IP addresses of our two `nginx` pods:
+d. Get the IP addresses of our two `nginx` pods:
 ```
 kubectl get ep nginx
 ```
+  
+There should be two IP addresses listed under `ENDPOINTS`. For example:
+```
+NAME      ENDPOINTS                       AGE
+nginx     10.200.0.2:80,10.200.128.1:80   50m
+```
+
+4. Make sure the `busybox` pod can connect to the `nginx` pods on both of those IP addresses.
+```
+kubectl exec $POD_NAME -- curl <first nginx pod IP address>
+kubectl exec $POD_NAME -- curl <second nginx pod IP address>
+```
+  
+Both commands should return some HTML with the title `"Welcome to Nginx!"` This means that we can successfully connect to other pods.
+
+5. Now let's verify that we can connect to services.
+```
+kubectl get svc
+```
+  
+This should display the IP address for our Nginx service. For example, in this case, the IP is `10.32.0.54`:
+```
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.32.0.1    <none>        443/TCP   1h
+nginx        ClusterIP   10.32.0.54   <none>        80/TCP    53m
+```
+
+6. Check that we can access the service from the busybox pod.
+```
+kubectl exec $POD_NAME -- curl <nginx service IP address>
+```
+  
+This should also return HTML with the title `"Welcome to nginx!"`
+  
+Getting this response means that we have successfully reached the Nginx service from inside a pod and that our networking configuration is working!
