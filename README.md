@@ -49,7 +49,8 @@ Building Highly Available Kubernetes cluster from scratch.
     - [Kubernetes Remote Access and kubectl](#kubernetes-remote-access-and-kubectl)
     - [Configuring Kubectl for Remote Access](#configuring-kubectl-for-remote-access)
     - [Configuring Kubectl to Access a Remote Cluster](#configuring-kubectl-to-access-a-remote-cluster)
-
+- [Networking](#networking)
+    - [The Kubernetes Networking Model](#the-kubernetes-networking-model)
 
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
@@ -2606,3 +2607,15 @@ No resources found.
 ```
 
 - This indicates that kubectl is set up correctly to access the cluster!
+
+## Networking
+### The Kubernetes Networking Model
+Kubernetes provides a powerful networking model which allows pods to communicate with one another over a virtual network, regardless of what host they are running on. However, Kubernetes networking can be confusing for those who are not familiar with the architecture behind networking in Kubernetes. This lesson introduces the Kubernetes networking model and provides some foundational knowledge about what it does. After completing this lesson, you will have a basic understanding of how networking works in Kubernetes, which will prepare you for the process of implementing networking in your cluster.
+  
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img19.png)
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img20.png)
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img21.png)
+  
+You can find more information on the Kubernetes networking model in the official docs: https://kubernetes.io/docs/concepts/cluster-administration/networking/
