@@ -2743,3 +2743,20 @@ kubectl exec $POD_NAME -- curl <nginx service IP address>
 
 - This means that we have successfully reached the Nginx service from inside a pod and that our networking configuration is working!
 
+### Cleanup
+Now that we have networking set up in the cluster, we need to clean up the objects that were created in order to test the networking. These object could get in the way or become confusing in later lessons, so it is a good idea to remove them from the cluster before proceeding. After completing this lesson, your networking should still be in place, but the pods and services that were used to test it will be cleaned up.
+  
+To do this, you will need to use kubectl. To connect with kubectl, you can either log in to one of the control nodes and run kubectl there or open an SSH tunnel for port 6443 to the load balancer server and use kubectl locally.
+  
+- You can open the SSH tunnel by running this in a separate terminal. Leave the session open while you are working to keep the tunnel active:
+```
+ssh -L 6443:localhost:6443 user@<your Load balancer cloud server public IP>
+```
+
+- You can clean up the testing objects from the previous lesson like so:
+```
+kubectl delete deployment busybox
+kubectl delete deployment nginx
+kubectl delete svc nginx
+```
+
