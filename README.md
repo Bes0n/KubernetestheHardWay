@@ -53,6 +53,7 @@ Building Highly Available Kubernetes cluster from scratch.
     - [The Kubernetes Networking Model](#the-kubernetes-networking-model)
     - [Cluster Network Architecture](#cluster-network-architecture)
     - [Installing Weave Net](#installing-weave-net)
+    - [Setting Up Kubernetes Networking with Weave Net](#setting-up-kubernetes-networking-with-weave-net)
 
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
@@ -2760,3 +2761,74 @@ kubectl delete deployment nginx
 kubectl delete svc nginx
 ```
 
+### Setting Up Kubernetes Networking with Weave Net
+##### Additional Information and Resources
+Your team is configuring a new Kubernetes cluster to run your company’s new online store. The controller and worker nodes have been set up, but some of the pods in your infrastructure will need to communicate with each other. Therefore, you need to configure Kubernetes networking. In this learning activity, you will implement networking in a Kubernetes cluster using Weave Net.
+
+##### Enable IP forwarding on all worker nodes.
+- In order for Weave Net to work, you need to make sure IP forwarding is enabled on the worker nodes. Enable it by running the following on both workers:
+```
+sudo sysctl net.ipv4.conf.all.forwarding=1
+echo "net.ipv4.conf.all.forwarding=1" | sudo tee -a /etc/sysctl.conf
+```
+
+##### Install Weave Net in the cluster.
+- Do the following on the controller server:
+1. Install Weave Net using a configuration from Weaveworks like this:
+```
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')&env.IPALLOC_RANGE=10.200.0.0/16"
+```
+
+2. Verify that everything is working:
+```
+kubectl get pods -n kube-system
+```
+- This should return two `weave-net` pods and look something like this:
+```
+NAME              READY     STATUS    RESTARTS   AGE
+weave-net-m69xq   2/2       Running   0          11s
+weave-net-vmb2n   2/2       Running   0          11s
+```
+
+3. Spin up some pods to test the networking functionality:
+  a. First, create an Nginx deployment with 2 replicas:
+
+```
+  cat << EOF | kubectl apply --kubeconfig admin.kubeconfig -f -
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: nginx
+  spec:
+    selector:
+      matchLabels:
+        run: nginx
+    replicas: 2
+    template:
+      metadata:
+        labels:
+          run: nginx
+      spec:
+        containers:
+        - name: my-nginx
+          image: nginx
+          ports:
+          - containerPort: 80
+  EOF
+```
+
+  b. Next, create a service for that deployment so that we can test connectivity to services as well:
+```
+kubectl expose deployment/nginx
+```
+  
+  c. Start up another pod. We will use this pod to test our networking. We will test whether we can connect to the other pods and services from this pod.
+```
+kubectl run busybox --image=radial/busyboxplus:curl --command -- sleep 3600
+POD_NAME=$(kubectl get pods -l run=busybox -o jsonpath="{.items[0].metadata.name}")
+```
+
+  d. Get the IP addresses of our two `nginx` pods:
+```
+kubectl get ep nginx
+```
