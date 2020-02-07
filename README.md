@@ -2791,7 +2791,8 @@ weave-net-vmb2n   2/2       Running   0          11s
 ```
 
 3. Spin up some pods to test the networking functionality:
-  a. First, create an Nginx deployment with 2 replicas:
+  
+a. First, create an Nginx deployment with 2 replicas:
 
 ```
   cat << EOF | kubectl apply --kubeconfig admin.kubeconfig -f -
