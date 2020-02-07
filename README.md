@@ -51,6 +51,8 @@ Building Highly Available Kubernetes cluster from scratch.
     - [Configuring Kubectl to Access a Remote Cluster](#configuring-kubectl-to-access-a-remote-cluster)
 - [Networking](#networking)
     - [The Kubernetes Networking Model](#the-kubernetes-networking-model)
+    - [Cluster Network Architecture](#cluster-network-architecture)
+    - [Installing Weave Net](#installing-weave-net)
 
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
@@ -2617,5 +2619,127 @@ Kubernetes provides a powerful networking model which allows pods to communicate
 ![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img20.png)
 
 ![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img21.png)
-  
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img22.png)
+
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img23.png)
+    
 You can find more information on the Kubernetes networking model in the official docs: https://kubernetes.io/docs/concepts/cluster-administration/networking/
+
+### Cluster Network Architecture
+There are several components involved in implementing networking in a Kubernetes cluster. This lesson provides an overview of what we have already done in our cluster in order to implement networking, as well as the remaining steps that will be performed to implement a virtual cluster network. It also introduces Weave Net, the networking solution that we will use in this course. After completing this lesson, you will have an understanding of the networking configuration that we are implementing in our cluster, and you will be ready to install Weave Net.
+  
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img24.png)
+
+You can find more information about Weave Net here: https://github.com/weaveworks/weave
+
+### Installing Weave Net
+We are now ready to set up networking in our Kubernetes cluster. This lesson guides you through the process of installing Weave Net in the cluster. It also shows you how to test your cluster network to make sure that everything is working as expected so far. After completing this lesson, you should have a functioning cluster network within your Kubernetes cluster.
+
+- You can configure Weave Net like this:
+- First, log in to both worker nodes and enable IP forwarding:
+```
+sudo sysctl net.ipv4.conf.all.forwarding=1
+echo "net.ipv4.conf.all.forwarding=1" | sudo tee -a /etc/sysctl.conf
+```
+
+- The remaining commands can be done using kubectl. To connect with kubectl, you can either log in to one of the control nodes and run kubectl there or open an SSH tunnel for port 6443 to the load balancer server and use kubectl locally.
+- You can open the SSH tunnel by running this in a separate terminal. Leave the session open while you are working to keep the tunnel active:
+```
+ssh -L 6443:localhost:6443 user@<your Load balancer cloud server public IP>
+```
+
+- Install Weave Net like this:
+```
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')&env.IPALLOC_RANGE=10.200.0.0/16"
+```
+
+- Now Weave Net is installed, but we need to test our network to make sure everything is working.
+- First, make sure the Weave Net pods are up and running:
+```
+kubectl get pods -n kube-system
+```
+
+- This should return two Weave Net pods, and look something like this:
+```
+NAME              READY     STATUS    RESTARTS   AGE
+weave-net-m69xq   2/2       Running   0          11s
+weave-net-vmb2n   2/2       Running   0          11s
+```
+
+- Next, we want to test that pods can connect to each other and that they can connect to services. We will set up two Nginx pods and a service for those two pods. Then, we will create a busybox pod and use it to test connectivity to both Nginx pods and the service.
+- First, create an Nginx deployment with 2 replicas:
+```
+cat << EOF | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  selector:
+    matchLabels:
+      run: nginx
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: nginx
+    spec:
+      containers:
+      - name: my-nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+EOF
+```
+
+- Next, create a service for that deployment so that we can test connectivity to services as well:
+```
+kubectl expose deployment/nginx
+```
+
+- Now let's start up another pod. We will use this pod to test our networking. We will test whether we can connect to the other pods and services from this pod.
+```
+kubectl run busybox --image=radial/busyboxplus:curl --command -- sleep 3600
+POD_NAME=$(kubectl get pods -l run=busybox -o jsonpath="{.items[0].metadata.name}")
+```
+
+- Now let's get the IP addresses of our two Nginx pods:
+```
+kubectl get ep nginx
+```
+
+- There should be two IP addresses listed under ENDPOINTS, for example:
+```
+NAME      ENDPOINTS                       AGE
+nginx     10.200.0.2:80,10.200.128.1:80   50m
+```
+
+- Now let's make sure the busybox pod can connect to the Nginx pods on both of those IP addresses.
+```
+kubectl exec $POD_NAME -- curl <first nginx pod IP address>
+kubectl exec $POD_NAME -- curl <second nginx pod IP address>
+```
+
+- Both commands should return some HTML with the title "Welcome to Nginx!" This means that we can successfully connect to other pods.
+- Now let's verify that we can connect to services.
+```
+kubectl get svc
+```
+
+- This should display the IP address for our Nginx service. For example, in this case, the IP is 10.32.0.54:
+```
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.32.0.1    <none>        443/TCP   1h
+nginx        ClusterIP   10.32.0.54   <none>        80/TCP    53m
+```
+
+- Let's see if we can access the service from the busybox pod!
+```
+kubectl exec $POD_NAME -- curl <nginx service IP address>
+```
+
+- This should also return HTML with the title "Welcome to Nginx!"
+
+- This means that we have successfully reached the Nginx service from inside a pod and that our networking configuration is working!
+
