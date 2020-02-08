@@ -61,6 +61,7 @@ Building Highly Available Kubernetes cluster from scratch.
     - [Smoke Testing the Cluster](#smoke-testing-the-cluster)
     - [Smoke Testing Data Encryption](#smoke-testing-data-encryption)
     - [Smoke Testing Deployments](#smoke-testing-deployments)
+    - [Smoke Testing Port Forwarding](#smoke-testing-port-forwarding)
 
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
@@ -3060,6 +3061,8 @@ Deployments are one of the powerful orchestration tools offered by Kubernetes. I
   
 ![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img28.png)
 
+For this lesson, you will need to connect to your cluster using kubectl. You can log in to one of your controller servers and use kubectl there, or you can use kubectl from your local machine. To use kubectl from your local machine, you will need to open an SSH tunnel. You can open the SSH tunnel by running this in a separate terminal. Leave the session open while you are working to keep the tunnel active:For this lesson, you will need to connect to your cluster using kubectl. You can log in to one of your controller servers and use kubectl there, or you can use kubectl from your local machine. To use kubectl from your local machine, you will need to open an SSH tunnel. You can open the SSH tunnel by running this in a separate terminal. Leave the session open while you are working to keep the tunnel active:
+
 For this lesson, you will need to connect to cluster using `kubectl`. You can log in to one of your controller server and use `kubectl` there, or you can use `kubectl` from your local machine. To use `kubectl` from your local machine, you will need to open an SSH tunnel. You can open the SSH tunnel by running this in a separate terminal. Leave the session open while you are working to keep the tunnel active:
 ```
 ssh -L 6443:localhost:6443 user@<your Load balancer cloud server public IP>
@@ -3082,3 +3085,32 @@ nginx-65899c769f-9xnqm   1/1       Running   0          30s
 ```
   
 The pod should have a STATUS of `Running` with 1/1 containers READY.
+
+### Smoke Testing Port Forwarding
+One way to get direct access to pods is the `kubectl port-forward` command. This command can be very useful in troubleshooting scenarios, so we want to make sure it works in our cluster. In this lesson, we will smoke test port forwarding in our cluster. We will set up port forwarding with kubectl to a pod in the cluster, and we will access the pod to verify that it is working.
+  
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img29.png)
+
+For this lesson, you will need to connect to your cluster using `kubectl`. You can log in to one of your controller servers and use `kubectl` there, or you can use `kubectl` from your local machine. To use `kubectl` from your local machine, you will need to open an SSH tunnel. You can open the SSH tunnel by running this in a separate terminal. Leave the session open while you are working to keep the tunnel active:
+```
+ssh -L 6443:localhost:6443 user@<your Load balancer cloud server public IP>
+```
+
+- First, get the pod name of the nginx pod and store it an an environment variable:
+```
+POD_NAME=$(kubectl get pods -l run=nginx -o jsonpath="{.items[0].metadata.name}")
+```
+
+- Forward port 8081 to the nginx pod:
+```
+kubectl port-forward $POD_NAME 8081:80
+```
+
+- Open up a new terminal on the same machine running the `kubectl port-forward` command and verify that the port forward works.
+```
+curl --head http://127.0.0.1:8081
+```
+  
+You should get an http `200 OK` response from the nginx pod.
+  
+When you are done, you can stop the port-forward in the original termain with `control+c`.
