@@ -60,6 +60,7 @@ Building Highly Available Kubernetes cluster from scratch.
 - [Smoke Test](#smoke-test)
     - [Smoke Testing the Cluster](#smoke-testing-the-cluster)
     - [Smoke Testing Data Encryption](#smoke-testing-data-encryption)
+    - [Smoke Testing Deployments](#smoke-testing-deployments)
 
 ## Getting Started 
 ### What Will the Kubernetes Cluster Architecture Look Like?
@@ -3053,3 +3054,31 @@ sudo ETCDCTL_API=3 etcdctl get \
 ```
   
 Look for `k8s:enc:aescbc:v1:key1` on the right of the output to verify that the data is stored in an encrypted format!
+
+### Smoke Testing Deployments
+Deployments are one of the powerful orchestration tools offered by Kubernetes. In this lesson, we will make sure that deployments are working in our cluster. We will verify that we can create a deployment, and that the deployment is able to successfully stand up a new pod and container.
+  
+![img](https://github.com/Bes0n/KubernetestheHardWay/blob/master/images/img28.png)
+
+For this lesson, you will need to connect to cluster using `kubectl`. You can log in to one of your controller server and use `kubectl` there, or you can use `kubectl` from your local machine. To use `kubectl` from your local machine, you will need to open an SSH tunnel. You can open the SSH tunnel by running this in a separate terminal. Leave the session open while you are working to keep the tunnel active:
+```
+ssh -L 6443:localhost:6443 user@<your Load balancer cloud server public IP>
+```
+
+- Create a a simple nginx deployment:
+```
+kubectl run nginx --image=nginx
+```
+
+- Verify that the deployment created a pod and that the pod is running:
+```
+kubectl get pods -l run=nginx
+```
+
+- Verify that the output looks something like this:
+```
+NAME                     READY     STATUS    RESTARTS   AGE
+nginx-65899c769f-9xnqm   1/1       Running   0          30s
+```
+  
+The pod should have a STATUS of `Running` with 1/1 containers READY.
